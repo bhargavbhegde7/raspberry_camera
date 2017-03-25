@@ -5,7 +5,15 @@ import datetime
 import imutils
 import time
 import cv2
- 
+
+def playSound():
+	import pygame
+	pygame.mixer.init()
+	pygame.mixer.music.load("buzz.wav")
+	pygame.mixer.music.play()
+	while pygame.mixer.music.get_busy() == True:
+		continue
+
 # initialize the camera and grab a reference to the raw camera capture
 camera = PiCamera()
 camera.resolution = tuple([640, 480])
@@ -14,7 +22,7 @@ rawCapture = PiRGBArray(camera, size=tuple([640, 480]))
  
 # allow the camera to warmup, then initialize the average frame, last
 # uploaded timestamp, and frame motion counter
-print "[INFO] warming up..."
+print ("[INFO] warming up...")
 time.sleep(2.5)
 avg = None
 lastUploaded = datetime.datetime.now()
@@ -35,7 +43,7 @@ for f in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True
  
 	# if the average frame is None, initialize it
 	if avg is None:
-		print "[INFO] starting background model..."
+		print ("[INFO] starting background model...")
 		avg = gray.copy().astype("float")
 		rawCapture.truncate(0)
 		continue
@@ -94,5 +102,9 @@ for f in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True
 	
 	# check to see if the frames should be displayed to screen
 	# clear the stream in preparation for the next frame
-	print text
+
+	if text == 'Occupied':
+		playSound()
+
+	print (text)
 	rawCapture.truncate(0)
